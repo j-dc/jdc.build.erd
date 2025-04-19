@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "jdc.build.erd": {
+      "commandName": "Project",
+      "commandLineArgs": "--provider SqlServer --connectionstring \"Server=localhost;User Id=sa;Database=jdc.build.erd.test;Password=This-Is-A-Secure-Password;TrustServerCertificate=True;\""
+    }
+  }
+}
