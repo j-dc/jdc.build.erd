@@ -1,0 +1,30 @@
+
+name: jdc_build_erd_devenv
+services:
+  mssql:
+    build:
+      context: ./mssql
+      dockerfile: ./Dockerfile
+    env_file:
+      - ./mssql/.env
+    ports:
+      - "1433:1433"
+    volumes:
+        - mssql_data:/var/opt/mssql
+    restart: unless-stopped
+
+  postgres:
+    build:
+      context: ./postgres
+      dockerfile: ./Dockerfile
+    restart: unless-stopped
+    volumes:
+     - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - ./postgres/.env
+    ports:
+      - "5432:5432"
+
+volumes:
+  mssql_data: 
+  postgres_data:
