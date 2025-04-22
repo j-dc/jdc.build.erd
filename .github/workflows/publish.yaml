@@ -50,7 +50,7 @@ jobs:
       
       - name: 🚀 Publish
         run: |
-          BASE = ghcr.io/${{ github.repository_owner }}/jdc-build-erd
+          BASE=ghcr.io/${{ github.repository_owner }}/jdc-build-erd
           TAG=${BASE}:${{ steps.version.outputs.semver }}
           docker build -t ${TAG} -f ./build/Dockerfile . --secret id=GITHUB_TOKEN,src=${{ secrets.GITHUB_TOKEN }}
           if [ "${{ github.ref_name }}" == "main" ]; then
