@@ -38,7 +38,7 @@ jobs:
         uses: gittools/actions/gitversion/execute@v3.2.0
         with:
           useConfigFile: true
-          configFilePath: ${{ github.workspace }}/build/GitVersion.yml
+          configFilePath: ${{ github.workspace }}/build/GitVersion.yaml
           updateProjectFiles: true
           
       - name: Log in to GHCR
