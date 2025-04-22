@@ -3,7 +3,7 @@ name: Build and Publish Docker Image
 on:
   push:
     branches:
-      - main  # Trigger on pushes to the main branch
+      - main 
       - develop
       - feature/* 
       - bugfix/*  
@@ -15,7 +15,7 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     permissions:
-      packages: write  # Grant permission to write to GHCR
+      packages: write 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
