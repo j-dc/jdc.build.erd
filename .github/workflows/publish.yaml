@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main  # Trigger on pushes to the main branch
+      - develop
+      - feature/* 
+      - bugfix/*  
+      - release/* 
+      - hotfix/*  
+      - support/*  
 
 jobs:
   build-and-push:
