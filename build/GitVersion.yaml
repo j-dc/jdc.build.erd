@@ -1,0 +1,7 @@
+branches:
+  release:
+    mode: ContinuousDelivery
+  feature:
+    mode: ContinuousDelivery
+  hotfix:
+    mode: ContinuousDelivery

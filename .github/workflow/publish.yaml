@@ -1,0 +1,62 @@
+name: Build and Publish Docker Image
+
+on:
+  push:
+    branches:
+      - main  # Trigger on pushes to the main branch
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write  # Grant permission to write to GHCR
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: 🥂 Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: ./src/global.json 
+      - name: GitVersion install
+        users: gittools/actions/gitversion/setup@3.2.0
+        with:
+          versionSpec: '6.1.x'
+          preferLatestVersion: true
+      
+      - name: Gitversion - Determine version
+        id: version
+        uses: gittools/actions/gitversion/execute@v3.2.0
+        with:
+          useConfigFile: true
+          configFilePath: ${{ github.workspace }}/build/GitVersion.yml
+          updateProjectFiles: true
+          
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 🚀 Publish
+        run: |
+          TAG=ghcr.io/${{ github.repository_owner }}/jdc-build-erd:${{ steps.version.outputs.semver }}
+          docker build -t ${TAG} -f ./build/Dockerfile . --secret id=GITHUB_TOKEN,src=${{ secrets.GITHUB_TOKEN }}
+          if [ "${{ github.ref_name }}" == "main" ]; then
+            LATEST_TAG=ghcr.io/${{ github.repository_owner }}/jdc-build-erd:latest
+            docker tag ${TAG} ${LATEST_TAG}
+          fi
+          docker push ${TAG}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/my-container:latest
+      
+      - name: docker logout
+        run: docker logout ghcr.io
