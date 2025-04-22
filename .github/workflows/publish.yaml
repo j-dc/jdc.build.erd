@@ -20,8 +20,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./src/global.json 
+      
       - name: GitVersion install
-        users: gittools/actions/gitversion/setup@3.2.0
+        uses: gittools/actions/gitversion/setup@v3.2.0
         with:
           versionSpec: '6.1.x'
           preferLatestVersion: true
