@@ -85,10 +85,12 @@ static class Program {
             }
 
             foreach (var c in table.Columns) {
-                var type = c.ColumnType
-                    .Replace(" ", "")
-                    .Replace(',', '_');
-                Console.WriteLine($"\t\t{type}\t{c.ColumnName}");
+                if (c.ColumnType is not null) {
+                    var type = c.ColumnType
+                        .Replace(" ", "")
+                        .Replace(',', '_');
+                    Console.WriteLine($"\t\t{type}\t{c.ColumnName}");
+                }
             }
 
             Console.WriteLine("\t}");
