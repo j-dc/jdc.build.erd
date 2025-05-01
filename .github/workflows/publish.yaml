@@ -10,6 +10,8 @@ on:
       - release/* 
       - hotfix/*  
       - support/*  
+    tags:        
+      - '**'
 
 jobs:
   build-and-push:
