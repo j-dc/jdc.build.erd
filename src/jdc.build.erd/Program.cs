@@ -8,6 +8,9 @@ using static jdc.build.erd.Program;
 using static LinqToDB.Reflection.Methods;
 using System.Runtime.Intrinsics.X86;
 using Microsoft.Extensions.Configuration.EnvironmentVariables;
+using LinqToDB.SchemaProvider;
+using LinqToDB.DataProvider.SapHana;
+using System.Runtime.CompilerServices;
 
 namespace jdc.build.erd;
 
@@ -38,7 +41,7 @@ static class Program {
         rootCommand.AddOption(optConStr);
 
 
-        rootCommand.SetHandler( (prov, constr) => {  Run(prov, constr); }, optProvider, optConStr);
+        rootCommand.SetHandler((prov, constr) => { Run(prov, constr); }, optProvider, optConStr);
 
         return await rootCommand.InvokeAsync(args);
 
@@ -62,24 +65,71 @@ static class Program {
 
         Console.WriteLine("erDiagram");
 
+        var references = new List<Reference>();
+
+
+
         foreach (var table in dbSchema.Tables) {
-            Console.WriteLine($"\t\"{table.SchemaName}.{table.TableName}\" {{");
+            var tableName = table.GetFullName();
+            Console.WriteLine($"\t\"{tableName}\" {{");
+
+            foreach (var fk in table.ForeignKeys) {
+                var thisTableName = fk.ThisTable.GetFullName();
+                if (!string.IsNullOrWhiteSpace(thisTableName) && thisTableName.Equals(tableName)) {
+                    var otherTableName = fk.OtherTable.GetFullName();
+                    if (!string.IsNullOrWhiteSpace(otherTableName)) {
+                        references.Add(new(tableName, otherTableName, fk.ToMermaidReference()));
+                    }
+
+                }
+            }
 
             foreach (var c in table.Columns) {
-                var type = c.ColumnType
-                    .Replace(" ","")
-                    .Replace(',','_');
-                Console.WriteLine($"\t\t{c.ColumnType}\t{c.ColumnName}");
-
+                if (c.ColumnType is not null) {
+                    var type = c.ColumnType
+                        .Replace(" ", "")
+                        .Replace(',', '_');
+                    Console.WriteLine($"\t\t{type}\t{c.ColumnName}");
+                }
             }
 
             Console.WriteLine("\t}");
         }
 
-        
-
-      
+        foreach (var r in references) {
+            Console.WriteLine($"\"{r.Source}\" {r.Association} \"{r.Destination}\" : \"\"");
+        }
 
     }
 
 }
+
+public static class Extensions {
+
+    public static string ToMermaidReference(this ForeignKeySchema input) {
+        if (input.CanBeNull) {
+            return input.AssociationType switch {
+                AssociationType.ManyToOne => "}|..||",
+                AssociationType.OneToOne => "||..||",
+                AssociationType.OneToMany => "||..|{",
+                AssociationType.Auto => "||..||",
+                _ => "||..||"
+            };
+        } else {
+            return input.AssociationType switch {
+                AssociationType.ManyToOne => "}o..||",
+                AssociationType.OneToOne => "||..||",
+                AssociationType.OneToMany => "||..o{",
+                AssociationType.Auto => "||..||",
+                _ => "||..||"
+            };
+        }
+        
+    }
+
+    public static string? GetFullName(this TableSchema? schema) {
+        return $"{schema?.SchemaName}.{schema?.TableName}";
+    }
+}
+
+public record Reference(string Source, string Destination, string Association);
