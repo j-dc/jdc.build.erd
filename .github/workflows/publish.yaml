@@ -56,10 +56,10 @@ jobs:
           TAG=${BASE}:${{ steps.version.outputs.semver }}
           docker build -t ${TAG} -f ./build/Dockerfile . --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN
           if [ "${{ github.ref_name }}" == "main" ]; then
-            LATEST_TAG=latest
-            docker tag ${TAG} ${LATEST_TAG}
+            LATEST_TAG=${BASE}:latest
+            docker image tag ${TAG} ${LATEST_TAG}
           fi
-          docker push ${TAG}
+          docker image push ${BASE} --all-tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
