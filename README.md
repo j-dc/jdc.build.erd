@@ -3,15 +3,40 @@ A simple tool to build a simple er diagram from a Relation Database server.
 
 ## Example:
 
-using a localhost postgres
+using a localhost mssql
 
 ```
-docker run -it --rm ghcr.io/j-dc/jdc-build-erd --provider PostgreSQL --connectionstring "Server=localhost;Database=test;User Id=DBUser;Password=Password;"
+docker run -it --rm ghcr.io/j-dc/jdc-build-erd --provider SqlServer2022 --connectionstring "Server=localhost;Database=test;User Id=DBUser;Password=Password;"
+```
+result:
+
+```
+erDiagram
+        "test.orders" {
+                int     orderId
+                int     customerId
+                datetime        orderDate
+                decimal(10_2)   totalAmount
+        }
+        "test.customers" {
+                int     customerId
+                nvarchar(100)   name
+                nvarchar(100)   email
+        }
+        "test.orderItems" {
+                int     orderItemId
+                int     orderId
+                nvarchar(100)   productName
+                int     quantity
+                decimal(10_2)   price
+        }
+"test.orders" }o..|| "test.customers" : ""
+"test.orderItems" }o..|| "test.orders" : ""
 ```
 
 ## Usage:
 
-&#9; `docker run -it --rm ghcr.io/j-dc/jdc-build-erd [options]`
+`docker run -it --rm ghcr.io/j-dc/jdc-build-erd [options]`
 
 ### Options:
 Options | Required | Description
@@ -21,5 +46,5 @@ Options | Required | Description
   --version   | | Show version information
   -?, -h, --help | | Show help and usage information
 
-## Versions
+## Versions & tags
 https://ghcr.io/j-dc/jdc-build-erd
