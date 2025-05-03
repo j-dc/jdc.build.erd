@@ -21,6 +21,9 @@ RUN dotnet publish ${BUILD_PROJECT} --runtime ${TARGETRUNTIME} -c ${BUILD_CONFIG
 ###### ACTUAL CONTAINER ######
 
 FROM mcr.microsoft.com/dotnet/runtime-deps:9.0.4-alpine3.21-amd64@sha256:37831f154882a94d3cc5e86ef64038b3c94eb56ccc175423b9b8a1e311e97667 AS final
+LABEL org.opencontainers.image.description="A simple tool to build a simple er diagram from a relational database."
+LABEL org.opencontainers.image.authors="https://github.com/j-dc"
+LABEL org.opencontainers.image.url="https://ghcr.io/j-dc/jdc-build-erd"
 
 RUN apk add --no-cache icu-libs
 
